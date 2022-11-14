@@ -30,11 +30,7 @@ class IEXServices
             ]
         );
 
-        if ($request->successful()) {
-            return $request->json();
-        }
-
-        return false;
+        return $request;
     }
 
     /**
@@ -54,10 +50,6 @@ class IEXServices
             ]
         );
 
-        if ($request->successful()) {
-            return $request->json();
-        }
-
-        return false;
+        return $request;
     }
 }

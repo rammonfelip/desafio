@@ -32,15 +32,15 @@ class CompanyServices implements CompanyInterface
             return $company;
         }
 
-        $companyData = $this->api->getCompany($symbol);
+        $request = $this->api->getCompany($symbol);
 
-        if (! $companyData) {
-            abort(404, 'Não foi possível encontrar informações. Por favor, tente novamente. ');
+        if ($request->successful()) {
+            $company = $this->create($request->json());
+
+            return $company;
         }
 
-        $company = $this->create($companyData);
-
-        return $company;
+        abort(404, 'Não foi possível encontrar informações. Por favor, tente novamente. ');
     }
 
     /**
@@ -68,21 +68,21 @@ class CompanyServices implements CompanyInterface
         $lastQuote = Quote::where('symbol', $symbol)->latest()->first();
 
         if ($lastQuote) {
-            $lastUpdated = $this->api->getQuote($symbol, 'latestUpdate');
+            $request = $this->api->getQuote($symbol, 'latestUpdate');
 
-            if ($lastUpdated && $lastQuote->latestUpdate === $lastUpdated) {
+            if ($request->successful() && $lastQuote->latestUpdate === $request->json()) {
                 return $lastQuote;
             }
         }
 
-        $quoteData = $this->api->getQuote($symbol, $field);
+        $request = $this->api->getQuote($symbol, $field);
 
-        if (! $quoteData) {
-            abort(404, 'Não foi possível encontrar informações. Por favor, tente novamente. ');
+        if ($request->successful()) {
+            $quote  = Quote::create($request->json());
+
+            return $quote;
         }
 
-        $quote  = Quote::create($quoteData);
-
-        return $quote;
+        abort(404, 'Não foi possível encontrar informações. Por favor, tente novamente. ');
     }
 }
