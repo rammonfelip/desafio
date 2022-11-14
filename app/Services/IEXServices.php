@@ -15,26 +15,49 @@ class IEXServices
         $this->token = env('IEX_TOKEN');
     }
 
+    /**
+     * Utiliza a API do IEX Cloud para consultar os dados de uma Empresa
+     * @param string $symbol
+     * @return array|false|mixed
+     */
     public function getCompany(string $symbol)
     {
         $urlPath = $this->url . sprintf('/stock/%s/company', $symbol);
 
-        return Http::acceptJson()->get(
+        $request = Http::acceptJson()->get(
             $urlPath, [
                 'token' => $this->token
             ]
-        )->json();
+        );
+
+        if ($request->successful()) {
+            return $request->json();
+        }
+
+        return false;
     }
 
+    /**
+     * Utiliza a API do IEX Cloud para consultar os dados de Cotação de uma Empresa, ou retorna apenas o campo solicitado.
+     * @param string $symbol
+     * @param string|null $field
+     * @return array|false|mixed
+     */
     public function getQuote(string $symbol, string $field = null)
     {
         $urlPath = $this->url . sprintf('/stock/%s/quote/%s', $symbol, $field);
 
-        return Http::acceptJson()->get(
+        $request = Http::acceptJson()->get(
             $urlPath, [
                 'token' => $this->token,
                 'displayPercent' => true
             ]
-        )->json();
+        );
+
+        if ($request->successful()) {
+            return $request->json();
+        }
+
+        return false;
     }
 }

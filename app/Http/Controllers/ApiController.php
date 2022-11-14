@@ -18,12 +18,16 @@ class ApiController extends Controller
     {
         $symbol = $request->input('symbol');
 
-        $company = [
-            'info'  => $this->company->show($symbol),
-            'quote' => $this->company->getQuote($symbol)
-        ];
+        $company = $this->company->show($symbol);
+        $quote   = $this->company->getQuote($symbol);
 
-        return $company;
+        return response()->json([
+            'data'  =>  [
+                'success'   =>  true,
+                'info'   =>  $company,
+                'quote' =>  $quote
+            ]
+        ], 200);
     }
 
     public function getLatestPrice(Request $request)

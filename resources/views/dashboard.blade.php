@@ -13,9 +13,8 @@
                     <p class="text-slate-500 group-hover:text-white text-sm">Por exemplo: aapl (Apple), meta (Facebook), twtr (Twitter), amzn (Amazon), nflx (Netflix).</p>
 
                     <form id="submit" action="{{ route('api.company') }}" method="get">
-
                         <label class="block">
-                            <input id="symbol-input" type="text" name="symbol" class="mt-1 px-3 py-2 bg-white border shadow-sm border-slate-300 placeholder-slate-400 focus:outline-none focus:border-sky-500 focus:ring-sky-500 block w-full rounded-md sm:text-sm focus:ring-1" placeholder="Insira aqui" />
+                            <input id="symbol-input" type="text" name="symbol" class="mt-1 px-3 py-2 bg-white border shadow-sm border-slate-300 placeholder-slate-400 focus:outline-none focus:border-sky-500 focus:ring-sky-500 block w-full rounded-md sm:text-sm focus:ring-1" placeholder="Insira aqui" required />
                         </label>
 
                         <div class="p-2">
@@ -24,10 +23,12 @@
                             </button>
                         </div>
                     </form>
+                    <p style="color: red;" class="text-slate-500 group-hover:text-white text-lg"><span id="error-message"></span></p>
                 </div>
             </div>
         </div>
     </div>
+
     <div id="result" class="py-1" style="display: none;">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
@@ -73,18 +74,25 @@
             processData: false,
             success: function (xhr) {
                 if (xhr) {
+                    $('#error-message').html('');
                     $('#result').fadeIn(500);
-                    $('#symbol').html(xhr.info.symbol);
-                    $('#companyName').html(xhr.info.companyName);
-                    $('#description').html(xhr.info.description);
-                    $('#ceo').html(xhr.info.ceo);
-                    $('#latestPrice').html(xhr.quote.latestPrice);
-                    $('#latestUpdate').html(xhr.quote.lastUpdate);
-                    $('#currency').html(xhr.quote.currency);
-                    $('#primaryExchange').html(xhr.quote.primaryExchange);
-                    $('#change').html(xhr.quote.change && Math.sign(xhr.quote.change) > 0 ? '+ ' + xhr.quote.change : '- ' + xhr.quote.change);
-                    $('#changePercent').html(Number(xhr.quote.changePercent * 100).toFixed(2) + ' %');
+                    $('#symbol').html(xhr.data.info.symbol);
+                    $('#companyName').html(xhr.data.info.companyName);
+                    $('#description').html(xhr.data.info.description);
+                    $('#ceo').html(xhr.data.info.ceo);
+                    $('#latestPrice').html(xhr.data.quote.latestPrice);
+                    $('#latestUpdate').html(xhr.data.quote.lastUpdate);
+                    $('#currency').html(xhr.data.quote.currency);
+                    $('#primaryExchange').html(xhr.data.quote.primaryExchange);
+                    $('#change').html(xhr.data.quote.change && Math.sign(xhr.data.quote.change) > 0 ? '+ ' + xhr.data.quote.change : '- ' + xhr.data.quote.change);
+                    $('#changePercent').html(Number(xhr.data.quote.changePercent * 100).toFixed(2) + ' %');
                 }
+            },
+            error: function (xhr, a) {
+                let message = xhr.responseJSON.message;
+
+                $('#result').fadeOut(300);
+                $('#error-message').html(message);
             }
         })
     });
